@@ -15,9 +15,9 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 
-from .const import DOMAIN
+from .const import DOMAIN, APIURL
 
-_CONFIG = Configuration(host="http://gateway-smarthome:8080")
+_CONFIG = Configuration(host=APIURL)
 _LOGGER = logging.getLogger(__name__)
 # adjust the data schema to the data that you need
 STEP_USER_DATA_SCHEMA = vol.Schema(

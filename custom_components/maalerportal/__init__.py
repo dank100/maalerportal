@@ -9,7 +9,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN
+from .const import DOMAIN, APIURL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hass.data.setdefault(DOMAIN, {})
     api_key: str = entry.data["api_key"]
-    api_config = Configuration(host="http://gateway-smarthome:8080")
+    api_config = Configuration(host=APIURL)
     api_client = ApiClient(api_config)
     api_client.default_headers["X-API-KEY"] = api_key
     hassapi = HomeAssistantApi(api_client)
