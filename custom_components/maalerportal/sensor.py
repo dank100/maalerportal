@@ -13,6 +13,7 @@ from mpsmarthome import (
     MeterReadingResponseData,
     MetersResponse,
     PartialRequest,
+    exceptions
 )
 
 from homeassistant.components.recorder import get_instance
@@ -115,14 +116,21 @@ class MaalerportalStatisticSensor(SensorEntity):
         response: MeterReadingResponse = None
         if lastest_statistic is None:
             request = FullRequest(address_meter_id=self._meter.address_meter_id)
-            response = await self._api.api_homeassistant_full_post([request])
-
+            try:
+                response = await self._api.api_homeassistant_full_post([request])
+            except exceptions.ApiException as api_exception:
+                _LOGGER.error(api_exception)
+                return
         else:
             request = PartialRequest(
                 address_meter_id=self._meter.address_meter_id,
                 latestMeasurementTime=(lastest_statistic["start"] + 1),
             )
-            response = await self._api.api_homeassistant_partial_post([request])
+            try:
+                response = await self._api.api_homeassistant_partial_post([request])
+            except exceptions.ApiException as api_exception:
+                _LOGGER.error(api_exception)
+                return
         meter_readings = cast(
             list[MeterReadingResponseData], response.address_meter_readings
         )
