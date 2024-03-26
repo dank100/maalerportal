@@ -137,7 +137,7 @@ class MaalerportalStatisticSensor(SensorEntity):
                 if reading.timestamp is None or reading.value is None:
                     continue
                 statistics.append(
-                    StatisticData(start=reading.timestamp, sum=float(reading.value))
+                    StatisticData(start=hour_rounder(reading.timestamp), sum=float(reading.value))
                 )
 
         metadata = StatisticMetaData(
@@ -163,3 +163,9 @@ def to_snake_case(s: str) -> str:
     s = re.sub("(.)([A-Z][a-z]+)", r"\1 \2", s)
     s = re.sub("([a-z0-9])([A-Z])", r"\1 \2", s)
     return s.lower().replace(" ", "_")
+
+def hour_rounder(t: datetime) -> datetime:
+    """Round to nearest hour by adding a timedelta hour if minute >= 30."""
+    return t.replace(second=0, microsecond=0, minute=0, hour=t.hour) + timedelta(
+        hours=t.minute // 30
+    )
