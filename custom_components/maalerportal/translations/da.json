@@ -1,0 +1,21 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Enheden er allerede konfigureret"
+    },
+    "error": {
+      "cannot_connect": "Kunne ikke oprette forbindelse",
+      "invalid_auth": "Forkert e-mail og/eller adgangskode",
+      "unknown": "Uventet fejl"
+    },
+    "step": {
+      "user": {
+        "data": {
+          "email": "E-mail",
+          "host": "Vært",
+          "password": "Adgangskode"
+        }
+      }
+    }
+  }
+}
