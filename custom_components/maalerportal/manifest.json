@@ -12,5 +12,5 @@
   "requirements": ["mpsmarthome==1.0.2"],
   "ssdp": [],
   "zeroconf": [],
-  "version": "1.0.1"
+  "version": "1.1.0"
 }

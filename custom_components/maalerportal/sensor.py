@@ -101,7 +101,7 @@ class MaalerportalStatisticSensor(SensorEntity):
 
     async def _get_last_stat(self, hass: HomeAssistant) -> Optional[StatisticsRow]:
         last_stats = await get_instance(hass).async_add_executor_job(
-            get_last_statistics, hass, 1, self.entity_id, True, {"state"}
+            get_last_statistics, hass, 1, self.entity_id, True, {"sum"}
         )
 
         if self.entity_id in last_stats and len(last_stats[self.entity_id]) > 0:
@@ -145,7 +145,7 @@ class MaalerportalStatisticSensor(SensorEntity):
                 if reading.timestamp is None or reading.value is None:
                     continue
                 statistics.append(
-                    StatisticData(start=hour_rounder(reading.timestamp), state=float(reading.value))
+                    StatisticData(start=hour_rounder(reading.timestamp), sum=float(reading.value))
                 )
 
         metadata = StatisticMetaData(
@@ -154,12 +154,16 @@ class MaalerportalStatisticSensor(SensorEntity):
             statistic_id=self.entity_id,
             unit_of_measurement=UnitOfVolume.CUBIC_METERS,
             has_mean=False,
-            has_sum=False,
+            has_sum=True,
         )
 
         if len(statistics) > 0:
             _LOGGER.debug("Adding %s readings for %s", len(statistics), self.entity_id)
             async_import_statistics(self.hass, metadata, statistics)
+            
+            # Update the sensor state with the latest reading for short-term history
+            last_sum = statistics[-1].sum
+            self._attr_native_value = last_sum
         else:
             _LOGGER.debug("No new readings found")
 
