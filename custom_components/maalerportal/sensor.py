@@ -79,7 +79,7 @@ class MaalerportalStatisticSensor(SensorEntity):
             return
         self.entity_id = f"sensor.{to_snake_case(meter.identifier + meter.address + meter.address_meter_id)}"
 
-    #@Throttle(timedelta(minutes=15))
+    @Throttle(timedelta(minutes=15))
     async def async_update(self) -> None:
         """Continually update history."""
         lastest_statistic = await self._get_last_stat(self.hass)
