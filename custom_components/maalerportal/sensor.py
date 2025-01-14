@@ -79,7 +79,7 @@ class MaalerportalStatisticSensor(SensorEntity):
             return
         self.entity_id = f"sensor.{to_snake_case(meter.identifier + meter.address + meter.address_meter_id)}"
 
-    @Throttle(timedelta(minutes=15))
+    #@Throttle(timedelta(minutes=15))
     async def async_update(self) -> None:
         """Continually update history."""
         lastest_statistic = await self._get_last_stat(self.hass)
@@ -134,6 +134,10 @@ class MaalerportalStatisticSensor(SensorEntity):
         meter_readings = cast(
             list[MeterReadingResponseData], response.address_meter_readings
         )
+
+        # Initialize a variable to keep track of the newest reading
+        newest_reading: Optional[MeterReadingData] = None
+
         for am in meter_readings:
             readings = cast(list[MeterReadingData], am.readings)
             readings.sort(
@@ -147,6 +151,10 @@ class MaalerportalStatisticSensor(SensorEntity):
                 statistics.append(
                     StatisticData(start=hour_rounder(reading.timestamp), sum=float(reading.value))
                 )
+                if (newest_reading is None) or (reading.timestamp > newest_reading.timestamp):
+                    newest_reading = reading
+
+        #newest value
 
         metadata = StatisticMetaData(
             name=self._attr_name,
@@ -160,10 +168,10 @@ class MaalerportalStatisticSensor(SensorEntity):
         if len(statistics) > 0:
             _LOGGER.debug("Adding %s readings for %s", len(statistics), self.entity_id)
             async_import_statistics(self.hass, metadata, statistics)
-            
-            # Update the sensor state with the latest reading for short-term history
-            last_sum = statistics[-1].sum
-            self._attr_native_value = last_sum
+
+            if newest_reading is not None:
+                self._attr_native_value = float(newest_reading.value)
+                self.async_write_ha_state()
         else:
             _LOGGER.debug("No new readings found")
 
