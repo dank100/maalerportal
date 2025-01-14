@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 
-from mpsmarthome import ApiClient, Configuration, HomeAssistantApi
+from smarthome_meterportal import ApiClient, Configuration, HomeAssistantApi
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform

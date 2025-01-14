@@ -5,7 +5,7 @@ import logging
 import re
 from typing import Optional, cast
 
-from mpsmarthome import (
+from smarthome_meterportal import (
     FullRequest,
     HomeAssistantApi,
     MeterReadingData,

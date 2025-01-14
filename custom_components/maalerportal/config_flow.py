@@ -4,8 +4,8 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-import mpsmarthome
-from mpsmarthome import Configuration, MetersResponse
+import smarthome_meterportal
+from smarthome_meterportal import Configuration, MetersResponse
 import voluptuous as vol
 
 from homeassistant import config_entries
@@ -33,17 +33,17 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> str:
 
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
-    request = mpsmarthome.AuthRequest(
+    request = smarthome_meterportal.AuthRequest(
         email_address=data[CONF_EMAIL], password=data[CONF_PASSWORD]
     )
     try:
-        async with mpsmarthome.ApiClient(_CONFIG) as api_client:
-            hassapi = mpsmarthome.HomeAssistantApi(api_client)
+        async with smarthome_meterportal.ApiClient(_CONFIG) as api_client:
+            hassapi = smarthome_meterportal.HomeAssistantApi(api_client)
             result = await hassapi.api_homeassistant_authenticate_post(request)
             if result.api_key is None:
                 raise InvalidAuth("API key is missing")
             return result.api_key
-    except mpsmarthome.exceptions.NotFoundException as err:
+    except smarthome_meterportal.exceptions.NotFoundException as err:
         raise InvalidAuth from err
 
 
@@ -108,9 +108,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_create_entry(title="Målere", data=save_data)
 
         entities_with_labels: dict[str, str] = {}
-        async with mpsmarthome.ApiClient(_CONFIG) as api_client:
+        async with smarthome_meterportal.ApiClient(_CONFIG) as api_client:
             api_client.default_headers["X-API-KEY"] = self.context["apikey"]
-            hassapi = mpsmarthome.HomeAssistantApi(api_client)
+            hassapi = smarthome_meterportal.HomeAssistantApi(api_client)
             result = await hassapi.api_homeassistant_meters_get()
             for m in result:
                 entities_with_labels[str(m.address_meter_id)] = (
