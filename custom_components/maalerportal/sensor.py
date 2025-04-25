@@ -169,9 +169,9 @@ class MaalerportalStatisticSensor(SensorEntity):
             _LOGGER.debug("Adding %s readings for %s", len(statistics), self.entity_id)
             async_import_statistics(self.hass, metadata, statistics)
 
-            #if newest_reading is not None:
-                #self._attr_native_value = float(newest_reading.value)
-                #self.async_write_ha_state()
+            if newest_reading is not None:
+                self._attr_native_value = float(newest_reading.value)
+                self.async_write_ha_state()
         else:
             _LOGGER.debug("No new readings found")
 
