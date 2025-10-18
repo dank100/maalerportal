@@ -95,6 +95,8 @@ class MaalerportalStatisticSensor(SensorEntity):
                     "Skipping fetching new readings, latest at %s",
                     statistic_start_time_utc,
                 )
+                self._attr_native_value = float(lastest_statistic.value)
+                self.async_write_ha_state()
                 return
         _LOGGER.debug("Attempting to fetch data")
         await self._get_data(lastest_statistic)
@@ -149,7 +151,7 @@ class MaalerportalStatisticSensor(SensorEntity):
                 if reading.timestamp is None or reading.value is None:
                     continue
                 statistics.append(
-                    StatisticData(start=hour_rounder(reading.timestamp), sum=float(reading.value))
+                    StatisticData(start=minute_floor(reading.timestamp), sum=float(reading.value))
                 )
                 if (newest_reading is None) or (reading.timestamp > newest_reading.timestamp):
                     newest_reading = reading
@@ -184,8 +186,5 @@ def to_snake_case(s: str) -> str:
     s = re.sub("([a-z0-9])([A-Z])", r"\1 \2", s)
     return s.lower().replace(" ", "_")
 
-def hour_rounder(t: datetime) -> datetime:
-    """Round to nearest hour by adding a timedelta hour if minute >= 30."""
-    return t.replace(second=0, microsecond=0, minute=0, hour=t.hour) + timedelta(
-        hours=t.minute // 30
-    )
+def minute_floor(t: datetime) -> datetime:
+    return t.replace(second=0, microsecond=0, minute=t.minute, hour=t.hour)
