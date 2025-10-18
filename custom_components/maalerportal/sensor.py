@@ -148,10 +148,10 @@ class MaalerportalStatisticSensor(SensorEntity):
                 else datetime(1970, 1, 1)
             )
             for reading in readings:
-                if reading.timestamp is None or reading.value is None:
+                if reading.timestamp is None or reading.value is None or reading.timestamp == lastest_statistic["start"]:
                     continue
                 statistics.append(
-                    StatisticData(start=minute_floor(reading.timestamp), sum=float(reading.value))
+                    StatisticData(start=hour_ceil(reading.timestamp), sum=float(reading.value))
                 )
                 if (newest_reading is None) or (reading.timestamp > newest_reading.timestamp):
                     newest_reading = reading
@@ -172,7 +172,7 @@ class MaalerportalStatisticSensor(SensorEntity):
             async_import_statistics(self.hass, metadata, statistics)
 
             if newest_reading is not None:
-                self._attr_native_value = float(newest_reading.value)
+                # self._attr_native_value = float(newest_reading.value)
                 self.async_write_ha_state()
         else:
             _LOGGER.debug("No new readings found")
@@ -186,5 +186,5 @@ def to_snake_case(s: str) -> str:
     s = re.sub("([a-z0-9])([A-Z])", r"\1 \2", s)
     return s.lower().replace(" ", "_")
 
-def minute_floor(t: datetime) -> datetime:
-    return t.replace(second=0, microsecond=0, minute=t.minute, hour=t.hour)
+def hour_ceil(t: datetime) -> datetime:
+    return t.replace(second=0, microsecond=0, minute=0, hour=t.hour+1)
