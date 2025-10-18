@@ -95,8 +95,6 @@ class MaalerportalStatisticSensor(SensorEntity):
                     "Skipping fetching new readings, latest at %s",
                     statistic_start_time_utc,
                 )
-                self._attr_native_value = float(lastest_statistic.value)
-                self.async_write_ha_state()
                 return
         _LOGGER.debug("Attempting to fetch data")
         await self._get_data(lastest_statistic)
