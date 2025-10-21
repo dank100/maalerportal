@@ -155,12 +155,10 @@ class MaalerportalStatisticSensor(SensorEntity):
                 })
             current_time += timedelta(hours=1)
 
-        all_readings = meter_readings + missing_hours
-
         # Initialize a variable to keep track of the newest reading
         newest_reading: Optional[MeterReadingData] = None
 
-        for am in all_readings:
+        for am in meter_readings:
             readings = cast(list[MeterReadingData], am.readings)
             readings.sort(
                 key=lambda x: x.timestamp
@@ -176,6 +174,10 @@ class MaalerportalStatisticSensor(SensorEntity):
                 if (newest_reading is None) or (reading.timestamp > newest_reading.timestamp):
                     newest_reading = reading
 
+            for missing_hour in missing_hours:
+                statistics.append(
+                    StatisticData(start=hour_ceil(missing_hour.timestamp), sum=float(missing_hour.value))
+                )
         #newest value
 
         metadata = StatisticMetaData(
