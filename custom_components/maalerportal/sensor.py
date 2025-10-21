@@ -135,26 +135,6 @@ class MaalerportalStatisticSensor(SensorEntity):
             list[MeterReadingResponseData], response.address_meter_readings
         )
 
-        # Calculate the range of missing hours
-        start_time = datetime.utcfromtimestamp(lastest_statistic["start"] + 1)
-        now = datetime.utcnow()
-
-        # Create a set of existing hours from the meter readings
-        existing_hours = set()
-        for reading in meter_readings:
-            existing_hours.add(reading.time.hour)
-
-        # Iterate through the missing hours and insert 0 readings
-        missing_hours = []
-        current_time = start_time
-        while current_time <= now:
-            if current_time.hour not in existing_hours:
-                missing_hours.append({
-                    "timestamp": current_time,
-                    "value": 0
-                })
-            current_time += timedelta(hours=1)
-
         # Initialize a variable to keep track of the newest reading
         newest_reading: Optional[MeterReadingData] = None
 
@@ -173,12 +153,36 @@ class MaalerportalStatisticSensor(SensorEntity):
                 )
                 if (newest_reading is None) or (reading.timestamp > newest_reading.timestamp):
                     newest_reading = reading
-
-            for missing_hour in missing_hours:
-                statistics.append(
-                    StatisticData(start=hour_ceil(missing_hour.timestamp), sum=float(missing_hour.value))
-                )
+                    
         #newest value
+        # Calculate the range of missing hours
+        start_time = datetime.utcfromtimestamp(lastest_statistic["start"] + 1)
+        value = 0
+        if (newest_reading is not None)
+            value = newest_reading.value 
+        if (newest_reading is not None) and (lastest_statistic["start"] + 1 < newest_reading.timestamp):
+            start_time = datetime.utcfromtimestamp(newest_reading.timestamp)
+        now = datetime.utcnow()
+
+        # Create a set of existing hours from the meter readings
+        existing_hours = set()
+        for reading in meter_readings:
+            existing_hours.add(reading.time.hour)
+
+        # Iterate through the missing hours and insert 0 readings
+        missing_hours = []
+        current_time = start_time
+        while current_time <= now:
+            if current_time.hour not in existing_hours:
+                missing_hours.append({
+                    "timestamp": current_time,
+                    "value": value
+                })
+            current_time += timedelta(hours=1)
+        for missing_hour in missing_hours:
+            statistics.append(
+                StatisticData(start=hour_ceil(missing_hour.timestamp), sum=float(missing_hour.value))
+            )
 
         metadata = StatisticMetaData(
             name=self._attr_name,
