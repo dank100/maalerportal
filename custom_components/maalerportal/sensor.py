@@ -150,7 +150,7 @@ class MaalerportalStatisticSensor(SensorEntity):
         while current_time <= now:
             if current_time.hour not in existing_hours:
                 missing_hours.append({
-                    "start": current_time,
+                    "timestamp": current_time,
                     "value": 0
                 })
             current_time += timedelta(hours=1)
