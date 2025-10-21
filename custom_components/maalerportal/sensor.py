@@ -135,10 +135,32 @@ class MaalerportalStatisticSensor(SensorEntity):
             list[MeterReadingResponseData], response.address_meter_readings
         )
 
+        # Calculate the range of missing hours
+        start_time = datetime.utcfromtimestamp(lastest_statistic["start"] + 1)
+        now = datetime.utcnow()
+
+        # Create a set of existing hours from the meter readings
+        existing_hours = set()
+        for reading in meter_readings:
+            existing_hours.add(reading.time.hour)
+
+        # Iterate through the missing hours and insert 0 readings
+        missing_hours = []
+        current_time = start_time
+        while current_time <= now:
+            if current_time.hour not in existing_hours:
+                missing_hours.append({
+                    "time": current_time,
+                    "value": 0
+                })
+            current_time += timedelta(hours=1)
+
+        all_readings = meter_readings + missing_hours
+
         # Initialize a variable to keep track of the newest reading
         newest_reading: Optional[MeterReadingData] = None
 
-        for am in meter_readings:
+        for am in all_readings:
             readings = cast(list[MeterReadingData], am.readings)
             readings.sort(
                 key=lambda x: x.timestamp
