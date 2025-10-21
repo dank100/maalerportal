@@ -149,7 +149,7 @@ class MaalerportalStatisticSensor(SensorEntity):
                 if reading.timestamp is None or reading.value is None or reading.timestamp == lastest_statistic["start"]:
                     continue
                 statistics.append(
-                    StatisticData(start=hour_ceil(reading.timestamp), sum=float(reading.value))
+                    StatisticData(start=hour_floor(reading.timestamp), sum=float(reading.value))
                 )
                 if (newest_reading is None) or (reading.timestamp > newest_reading.timestamp):
                     newest_reading = reading
@@ -182,7 +182,7 @@ class MaalerportalStatisticSensor(SensorEntity):
             current_time += timedelta(hours=1)
         for missing_hour in missing_hours:
             statistics.append(
-                StatisticData(start=hour_ceil(missing_hour.timestamp), sum=float(missing_hour.value))
+                StatisticData(start=hour_floor(missing_hour.timestamp), sum=float(missing_hour.value))
             )
 
         metadata = StatisticMetaData(
@@ -213,5 +213,5 @@ def to_snake_case(s: str) -> str:
     s = re.sub("([a-z0-9])([A-Z])", r"\1 \2", s)
     return s.lower().replace(" ", "_")
 
-def hour_ceil(t: datetime) -> datetime:
-    return t.replace(second=0, microsecond=0, minute=0, hour=t.hour+1)
+def hour_floor(t: datetime) -> datetime:
+    return t.replace(second=0, microsecond=0, minute=0, hour=t.hour)
