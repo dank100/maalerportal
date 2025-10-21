@@ -158,10 +158,11 @@ class MaalerportalStatisticSensor(SensorEntity):
         # Calculate the range of missing hours
         start_time = datetime.utcfromtimestamp(lastest_statistic["start"] + 1)
         value = 0
-        if (newest_reading is not None)
-            value = newest_reading.value 
-        if (newest_reading is not None) and (lastest_statistic["start"] + 1 < newest_reading.timestamp):
-            start_time = datetime.utcfromtimestamp(newest_reading.timestamp)
+        if newest_reading is not None:
+            value = newest_reading.value
+            if lastest_statistic["start"] + 1 < newest_reading.timestamp:
+                start_time = datetime.utcfromtimestamp(newest_reading.timestamp)
+
         now = datetime.utcnow()
 
         # Create a set of existing hours from the meter readings
