@@ -124,7 +124,7 @@ class MaalerportalStatisticSensor(SensorEntity):
         else:
             request = PartialRequest(
                 address_meter_id=self._meter.address_meter_id,
-                latestMeasurementTime=(lastest_statistic["start"] + 1),
+                latestMeasurementTime=(lastest_statistic["start"] - 1),
             )
             try:
                 response = await self._api.api_homeassistant_partial_post([request])
