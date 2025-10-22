@@ -169,7 +169,7 @@ class MaalerportalStatisticSensor(SensorEntity):
         # Create a set of existing hours from the meter readings
         existing_hours = set()
         for reading in meter_readings:
-            existing_hours.add(reading.time.hour)
+            existing_hours.add(reading.timestamp.hour)
 
         # Iterate through the missing hours and insert 0 readings
         missing_hours = []
