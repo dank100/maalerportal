@@ -160,7 +160,7 @@ class MaalerportalStatisticSensor(SensorEntity):
         value = 0
         if newest_reading is not None:
             value = newest_reading.value
-            late_reading = newest_reading.timestamp.astimezone(timezone.utc)
+            late_reading = newest_reading.timestamp.replace(tzinfo=None)
             if start_time < late_reading:
                 start_time = late_reading
 
