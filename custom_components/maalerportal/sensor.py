@@ -147,7 +147,7 @@ class MaalerportalStatisticSensor(SensorEntity):
                 else datetime(1970, 1, 1)
             )
             for reading in readings:
-                if reading.timestamp is None or reading.value is None or reading.timestamp == lastest_statistic["start"]:
+                if reading.timestamp is None or reading.value is None:
                     continue
                 existing_hours.add(reading.timestamp.hour)
                 statistics.append(
@@ -178,10 +178,10 @@ class MaalerportalStatisticSensor(SensorEntity):
                     "value": value
                 })
             current_time += timedelta(hours=1)
-        for missing_hour in missing_hours:
-            statistics.append(
-                StatisticData(start=hour_floor(missing_hour.timestamp), sum=float(missing_hour.value))
-            )
+        # for missing_hour in missing_hours:
+        #     statistics.append(
+        #         StatisticData(start=hour_floor(missing_hour['timestamp']), sum=float(missing_hour['value']))
+        #     )
 
         metadata = StatisticMetaData(
             name=self._attr_name,
@@ -198,7 +198,7 @@ class MaalerportalStatisticSensor(SensorEntity):
 
             if newest_reading is not None:
                 self._attr_native_value = float(newest_reading.value)
-                self.async_write_ha_state()
+                self.schedule_update_ha_state()
         else:
             _LOGGER.debug("No new readings found")
 
