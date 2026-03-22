@@ -156,28 +156,31 @@ class MaalerportalStatisticSensor(SensorEntity):
                 if (newest_reading is None) or (reading.timestamp > newest_reading.timestamp):
                     newest_reading = reading
                     
-        #newest value
-        # Calculate the range of missing hours
-        start_time = datetime.utcfromtimestamp(lastest_statistic["start"] + 1)
-        value = 0
-        if newest_reading is not None:
-            value = newest_reading.value
-            late_reading = newest_reading.timestamp.replace(tzinfo=None)
-            if start_time < late_reading:
-                start_time = late_reading
+        # newest value
+        # Calculate the range of missing hours only if we have a prior statistic
+        if lastest_statistic is not None:
+            start_time = datetime.utcfromtimestamp(lastest_statistic["start"] + 1)
+            value = 0
+            if newest_reading is not None:
+                value = newest_reading.value
+                late_reading = newest_reading.timestamp.replace(tzinfo=None)
+                if start_time < late_reading:
+                    start_time = late_reading
 
-        now = datetime.utcnow()
+            now = datetime.utcnow()
 
-        # Iterate through the missing hours and insert 0 readings
-        missing_hours = []
-        current_time = start_time
-        while current_time <= now:
-            if current_time.hour not in existing_hours:
-                missing_hours.append({
-                    "timestamp": current_time,
-                    "value": value
-                })
-            current_time += timedelta(hours=1)
+            # Iterate through the missing hours and insert 0 readings
+            missing_hours = []
+            current_time = start_time
+            while current_time <= now:
+                if current_time.hour not in existing_hours:
+                    missing_hours.append(
+                        {
+                            "timestamp": current_time,
+                            "value": value,
+                        }
+                    )
+                current_time += timedelta(hours=1)
         # for missing_hour in missing_hours:
         #     statistics.append(
         #         StatisticData(start=hour_floor(missing_hour['timestamp']), sum=float(missing_hour['value']))
