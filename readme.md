@@ -2,7 +2,7 @@
 
 This is a custom component for Home Assistant to integrate Målerportal.
 
-## Prerequisits:
+## Prerequisites:
 
 Ensure that HACS is installed.
 
@@ -33,7 +33,7 @@ Guide docker: https://www.simplysmart.house/blog/how-to-install-HACS-on-home-ass
 - Click the next button until you get to “Water consumption”
 - Click “Add Water Source”
 - Click the “Water usage” field
-- Select the sensor (Entity) you wish to get displayed.
+- Select the sensor named `Målerportal Total Consumption`.
 - Click “Save”<br/>
 
 You can now click “Show me my energy dashboard!”<br/>

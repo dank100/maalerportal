@@ -21,7 +21,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     session = async_get_clientsession(hass)
     client = MaalerportalApiClient(session)
-    hass.data[DOMAIN][entry.entry_id] = client
+    hass.data[DOMAIN][entry.entry_id] = {
+        "client": client,
+        "metrics": None,
+        "last_sum": None,
+        "unit": None,
+    }
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     if not hass.services.has_service(DOMAIN, SERVICE_FORCE_RELOGIN):
         hass.services.async_register(DOMAIN, SERVICE_FORCE_RELOGIN, _handle_force_relogin)
@@ -50,12 +55,13 @@ async def _handle_force_relogin(call) -> None:
         entry = hass.config_entries.async_get_entry(entry_id)
         if not entry:
             continue
+        client_obj = client["client"] if isinstance(client, dict) else client
         email = email_override or entry.data.get("email")
         password = password_override or entry.data.get("password")
         if not email or not password:
             continue
         try:
-            login = await client.login(email, password)
+            login = await client_obj.login(email, password)
         except Exception:  # pylint: disable=broad-except
             continue
         access_token = (
