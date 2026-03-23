@@ -1,0 +1,20 @@
+force_relogin:
+  name: Force re-login
+  description: Re-authenticate and refresh tokens for all Målerportal entries.
+  fields:
+    entry_id:
+      name: Entry ID
+      description: Optional specific config entry to refresh.
+      example: "01KMBMMPK5XSX2ABFBBTE4DP3J"
+    email:
+      name: Email
+      description: Optional email to use for re-login (overrides stored).
+      example: "user@example.com"
+    password:
+      name: Password
+      description: Optional password to use for re-login (overrides stored).
+      example: "secret"
+    store_password:
+      name: Store password
+      description: Save email/password in the config entry for future logins.
+      example: false

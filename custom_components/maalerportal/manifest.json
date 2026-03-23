@@ -9,7 +9,7 @@
   "homekit": {},
   "iot_class": "cloud_polling",
   "loggers": ["M\u00e5lerportal"],
-  "requirements": ["smarthome-meterportal==1.0.2"],
+  "requirements": [],
   "ssdp": [],
   "zeroconf": [],
   "version": "1.2.9"

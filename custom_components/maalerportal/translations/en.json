@@ -12,8 +12,12 @@
       "user": {
         "data": {
           "email": "E-mail",
-          "host": "Host",
           "password": "Password"
+        }
+      },
+      "address_selection": {
+        "data": {
+          "address_selection": "Select meter"
         }
       }
     }
